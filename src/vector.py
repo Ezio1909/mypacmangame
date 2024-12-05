@@ -27,6 +27,7 @@ class Vector:
         Returns:
             Vector: A new vector that is the sum of this vector and the other.
         """
+        assert isinstance(other, Vector)
         return Vector(x = self.x + other.x, y = self.y + other.y)
 
     def __sub__(self, other):
@@ -39,6 +40,7 @@ class Vector:
         Returns:
             Vector: A new vector that is the difference between this vector and the other.
         """
+        assert isinstance(other, Vector)
         return Vector( x = self.x - other.x, y = self.y - other.y)
 
     def __mul__(self, scalar):
@@ -81,7 +83,8 @@ class Vector:
         Returns:
             bool: True if vectors are equal within the threshold, False otherwise.
         """
-        return True if abs(self.x - other.x) < self.threshold and abs(self.y - other.y) < self.threshold else False
+        assert isinstance(other, Vector)
+        return True if math.isclose(self.x, other.x, abs_tol=self.threshold) and math.isclose(self.y, other.y, abs_tol=self.threshold) else False
 
     def magnitude_squared(self):
         """
