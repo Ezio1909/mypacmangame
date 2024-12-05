@@ -66,10 +66,9 @@ class Vector:
         Raises:
             ValueError: If scalar is zero.
         """
-        try:
-            return Vector( x = self.x / scalar, y = self.y / scalar)
-        except:
-            return ValueError("scalar cannot be zero")
+        if scalar == 0:
+            raise ValueError("scalar cannot be zero")
+        return Vector(x=self.x / scalar, y=self.y / scalar)
 
 
     def __eq__(self, other):
@@ -82,7 +81,7 @@ class Vector:
         Returns:
             bool: True if vectors are equal within the threshold, False otherwise.
         """
-        return True if (self.x - other.x) < self.threshold and (self.y - other.y) < self.threshold else False
+        return True if abs(self.x - other.x) < self.threshold and abs(self.y - other.y) < self.threshold else False
 
     def magnitude_squared(self):
         """
@@ -100,7 +99,7 @@ class Vector:
         Returns:
             float: The magnitude of the vector.
         """
-        return math.sqrt(self.magnitude_squared(self))
+        return math.sqrt(self.magnitude_squared())
 
     def copy(self):
         """
