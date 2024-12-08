@@ -5,7 +5,7 @@ from constants import *
 import logging
 
 logging.basicConfig(
-    level=logging.NOTSET,
+    level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler()  # Logs to console
@@ -16,7 +16,7 @@ class Pacman(object):
 
     def __init__(self, node):
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.info("Initializing Pacman")
+        self.logger.debug("Initializing Pacman")
         self.name = PACMAN
         # self.position = Vector(200, 400)
         self.directions = {
@@ -46,7 +46,7 @@ class Pacman(object):
         # self.node = self.getNewTarget(direction)
         # self.setPosition()
         if self.overshotTarget():
-            self.logger.info("Overshot target, updating node and target")
+            self.logger.debug("Overshot target, updating node and target")
             self.node = self.target
             self.target = self.getNewTarget(direction)
             if self.target is not self.node:

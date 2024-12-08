@@ -1,6 +1,16 @@
 import pygame
 from vector import Vector
 from constants import *
+import numpy as np
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()  # Logs to console
+    ]
+)
 
 class Node:
 
@@ -23,35 +33,84 @@ class Node:
 
 
 class NodeGroup(object):
-    def __init__(self):
+    def __init__(self, level):
+        self.logger = logging.getLogger(self.__class__.__name__)
         self.nodeList = []
+        self.level = level
+        self.nodesLUT = {}
+        self.nodeSymbols = ['+']
+        self.pathSymbols = ['.']
+        data = self.readMazeFile(level)
+        self.logger.info(f"dataAfterReadFile: {data}")
+        self.createNodeTable(data)
+        self.connectHorizontally(data)
+        self.connectVertically(data)
 
-    def setupTestNodes(self):
-        nodeA = Node(80 ,80)
-        nodeB = Node(160, 80)
-        nodeC = Node(80, 160)
-        nodeD = Node(160, 160)
-        nodeE = Node(208, 160)
-        nodeF = Node(80, 320)
-        nodeG = Node(208, 320)
-        nodeA.neighbors[RIGHT] = nodeB
-        nodeA.neighbors[DOWN] = nodeC
-        nodeB.neighbors[LEFT] = nodeA
-        nodeB.neighbors[DOWN] = nodeD
-        nodeC.neighbors[UP] = nodeA
-        nodeC.neighbors[RIGHT] = nodeD
-        nodeC.neighbors[DOWN] = nodeF
-        nodeD.neighbors[UP] = nodeB
-        nodeD.neighbors[LEFT] = nodeC
-        nodeD.neighbors[RIGHT] = nodeE
-        nodeE.neighbors[LEFT] = nodeD
-        nodeE.neighbors[DOWN] = nodeG
-        nodeF.neighbors[UP] = nodeC
-        nodeF.neighbors[RIGHT] = nodeG
-        nodeG.neighbors[UP] = nodeE
-        nodeG.neighbors[LEFT] = nodeF
-        self.nodeList = [nodeA, nodeB, nodeC, nodeD, nodeE, nodeF, nodeG]
+    def readMazeFile(self, textFile):
+        return np.loadtxt(textFile, dtype='<U1')
+    
+    def createNodeTable(self, data, xoffset=0, yoffset=0):
+        for row in list(range(data.shape[0])):
+            for col in list(range(data.shape[1])):
+                if data[row][col] in self.nodeSymbols:
+                    x, y =self.constructKey(col+xoffset, row+yoffset)
+                    self.nodesLUT[(x, y)] = Node(x, y)
+                    self.logger.info(f"Added node: {(x ,y)}")
+    
+    def connectHorizontally(self, data, xoffset=0, yoffset=0):
+        self.logger.info(f"[connectHorizontally] data: {data}")
+        for node_key, node in self.nodesLUT.items():
+            self.logger.info(f"Node:{node_key}, Connections: {node.neighbors}")
+        for row in list(range(data.shape[0])):
+            key = None
+            for col in list(range(data.shape[1])):
+                if data[row][col] in self.nodeSymbols:
+                    if key is None:
+                        key = self.constructKey(col+xoffset, row+yoffset)
+                        self.logger.info(f"key: {key}")
+                    else:
+                        otherkey = self.constructKey(col+xoffset, row+yoffset)
+                        self.nodesLUT[key].neighbors[RIGHT] = self.nodesLUT[otherkey]
+                        self.nodesLUT[otherkey].neighbors[LEFT] = self.nodesLUT[key]
+                        self.logger.info(f"Connecting horizontally: {key} <-> {otherkey}")
+                        key = otherkey
+                elif data[row][col] not in self.pathSymbols:
+                    key = None
+
+    def connectVertically(self, data, xoffset=0, yoffset=0):
+        dataT = data.transpose()
+        for col in list(range(dataT.shape[0])):
+            key = None
+            for row in list(range(dataT.shape[1])):
+                if dataT[col][row] in self.nodeSymbols:
+                    if key is None:
+                        key = self.constructKey(col+xoffset, row+yoffset)
+                    else:
+                        otherkey = self.constructKey(col+xoffset, row+yoffset)
+                        self.nodesLUT[key].neighbors[DOWN] = self.nodesLUT[otherkey]
+                        self.nodesLUT[otherkey].neighbors[UP] = self.nodesLUT[key]
+                        key = otherkey
+                elif dataT[col][row] not in self.pathSymbols:
+                    key = None
+
+    def getNodeFromPixels(self, xpixel, ypixel):
+        if (xpixel, ypixel) in self.nodesLUT.keys():
+            return self.nodesLUT[(xpixel, ypixel)]
+        return None
+
+    def getNodeFromTiles(self, col, row):
+        x, y = self.constructKey(col, row)
+        if (x, y) in self.nodesLUT.keys():
+            return self.nodesLUT[(x, y)]
+        return None
+
+    def constructKey(self, x, y):
+        return x*TILEWIDTH, y*TILEHEIGHT
+    
+    def getStartTempNode(self):
+        nodes = list(self.nodesLUT.values())
+        return nodes[0]
 
     def render(self, screen):
-        for node in self.nodeList:
+        for node in self.nodesLUT.values():
             node.render(screen)
