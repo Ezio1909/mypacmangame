@@ -86,7 +86,7 @@ class Vector:
         assert isinstance(other, Vector)
         return True if math.isclose(self.x, other.x, abs_tol=self.threshold) and math.isclose(self.y, other.y, abs_tol=self.threshold) else False
 
-    def magnitude_squared(self):
+    def magnitudeSquared(self):
         """
         Calculate the squared magnitude of the vector.
 
@@ -113,7 +113,7 @@ class Vector:
         """
         return Vector( x = self.x, y = self.y )
 
-    def as_tuple(self):
+    def asTuple(self):
         """
         Convert the vector to a tuple.
 
@@ -122,7 +122,7 @@ class Vector:
         """
         return (self.x, self.y)
 
-    def as_int_tuple(self):
+    def asIntTuple(self):
         """
         Convert the vector to a tuple of integers.
 
