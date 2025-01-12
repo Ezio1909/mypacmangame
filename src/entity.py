@@ -74,6 +74,11 @@ class Entity(object):
     def setSpeed(self, speed):
         self.speed = speed * TILEWIDTH / 16
 
+    def setBetweenNodes(self, direction):
+        if self.node.neighbors[direction] is not None:
+            self.target = self.node.neighbors[direction]
+            self.position = (self.node.position + self.target.position) / 2.0
+
     def validDirections(self):
         directions = []
         for key in [UP, DOWN,LEFT, RIGHT]:

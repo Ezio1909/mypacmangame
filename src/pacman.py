@@ -20,6 +20,7 @@ class Pacman(Entity):
         self.name = PACMAN
         self.color = YELLOW
         self.direction = LEFT
+        self.setBetweenNodes(LEFT)
 
     def getValidKey(self):
         key_pressed = pygame.key.get_pressed()
