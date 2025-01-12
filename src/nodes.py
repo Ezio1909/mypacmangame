@@ -5,7 +5,7 @@ import numpy as np
 import logging
 
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler()  # Logs to console
@@ -56,24 +56,18 @@ class NodeGroup(object):
                 if data[row][col] in self.nodeSymbols:
                     x, y =self.constructKey(col+xoffset, row+yoffset)
                     self.nodesLUT[(x, y)] = Node(x, y)
-                    self.logger.info(f"Added node: {(x ,y)}")
     
     def connectHorizontally(self, data, xoffset=0, yoffset=0):
-        self.logger.info(f"[connectHorizontally] data: {data}")
-        for node_key, node in self.nodesLUT.items():
-            self.logger.info(f"Node:{node_key}, Connections: {node.neighbors}")
         for row in list(range(data.shape[0])):
             key = None
             for col in list(range(data.shape[1])):
                 if data[row][col] in self.nodeSymbols:
                     if key is None:
                         key = self.constructKey(col+xoffset, row+yoffset)
-                        self.logger.info(f"key: {key}")
                     else:
                         otherkey = self.constructKey(col+xoffset, row+yoffset)
                         self.nodesLUT[key].neighbors[RIGHT] = self.nodesLUT[otherkey]
                         self.nodesLUT[otherkey].neighbors[LEFT] = self.nodesLUT[key]
-                        self.logger.info(f"Connecting horizontally: {key} <-> {otherkey}")
                         key = otherkey
                 elif data[row][col] not in self.pathSymbols:
                     key = None
