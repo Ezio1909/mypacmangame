@@ -16,26 +16,10 @@ logging.basicConfig(
 class Pacman(Entity):
 
     def __init__(self, node):
-        self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.debug("Initializing Pacman")
         Entity.__init__(self, node)
         self.name = PACMAN
-        # self.position = Vector(200, 400)
-        self.directions = {
-            STOP: Vector(),
-            UP: Vector(0,-1),
-            DOWN: Vector(0,1),
-            LEFT: Vector(-1,0),
-            RIGHT: Vector(1,0)
-        }
-        self.direction = STOP
-        self.speed = 100 * TILEWIDTH/16
-        self.radius = 10
         self.color = YELLOW
-        self.node = node
-        self.setPosition()
-        self.target = node
-        self.collideRadius = 5
+        self.direction = LEFT
 
     def getValidKey(self):
         key_pressed = pygame.key.get_pressed()
