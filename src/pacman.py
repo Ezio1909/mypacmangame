@@ -37,18 +37,17 @@ class Pacman(Entity):
         self.target = node
         self.collideRadius = 5
 
-    def eatPellets(self, pelletList):
-        for pellet in pelletList:
-            d = self.position - pellet.position
-            dSquared = d.magnitudeSquared()
-            rSquared = (pellet.radius + self.collideRadius)**2
-            if dSquared <= rSquared:
-                return pellet
-        return None
-
-    def setPosition(self):
-        self.logger.debug(f"Setting position to {self.node.position}")
-        self.position = self.node.position.copy()
+    def getValidKey(self):
+        key_pressed = pygame.key.get_pressed()
+        if key_pressed[K_UP]:
+            return UP
+        if key_pressed[K_DOWN]:
+            return DOWN
+        if key_pressed[K_LEFT]:
+            return LEFT
+        if key_pressed[K_RIGHT]:
+            return RIGHT
+        return STOP
 
     def update(self, dt):
         self.logger.debug(f"Updating position with dt={dt}")
@@ -74,50 +73,19 @@ class Pacman(Entity):
             if self.oppositeDirection(direction):
                 self.reverseDirection()
 
-    def validDirection(self, direction):
-        if direction is not STOP:
-            if self.node.neighbors[direction] is not None:
-                return True
-        return False
-    
-    def reverseDirection(self):
-        self.direction *= -1
-        temp = self.node
-        self.node = self.target
-        self.target = temp
+    def eatPellets(self, pelletList):
+        for pellet in pelletList:
+            if self.collideCheck(pellet):
+                return pellet
+        return None
 
-    def oppositeDirection(self, direction):
-        if direction is not STOP:
-            if direction == self.direction * -1:
-                return True
-        return False
-    
-    def getNewTarget(self, direction):
-        if self.validDirection(direction):
-            return self.node.neighbors[direction]
-        return self.node
+    def collideGhost(self, ghost):
+        return self.collideCheck(ghost)
 
-    def getValidKey(self):
-        key_pressed = pygame.key.get_pressed()
-        if key_pressed[K_UP]:
-            return UP
-        if key_pressed[K_DOWN]:
-            return DOWN
-        if key_pressed[K_LEFT]:
-            return LEFT
-        if key_pressed[K_RIGHT]:
-            return RIGHT
-        return STOP
-    
-    def overshotTarget(self):
-        if self.target is not None:
-            vec1 = self.target.position - self.node.position
-            vec2 = self.position - self.node.position
-            node2Target = vec1.magnitudeSquared()
-            node2Self = vec2.magnitudeSquared()
-            return node2Self >= node2Target
+    def collideCheck(self, other):
+        d = self.position - other.position
+        dSquared = d.magnitudeSquared()
+        rSquared = (self.collideRadius + other.collideRadius)**2
+        if dSquared <= rSquared:
+            return True
         return False
-    
-    def render(self, screen):
-        p = self.position.asTuple()
-        pygame.draw.circle(screen, self.color, p, self.radius)

@@ -132,14 +132,6 @@ class NodeGroup(object):
         self.nodesLUT[homekey].neighbors[direction] = self.nodesLUT[key]
         self.nodesLUT[key].neighbors[direction*-1] = self.nodesLUT[homekey]
 
-    def setFreightMode(self):
-        if self.current in [SCATTER, CHASE]:
-            self.timer = 0
-            self.time = 7
-            self.current = FREIGHT
-        elif self.current is FREIGHT:
-            self.timer = 0
-
     def render(self, screen):
         for node in self.nodesLUT.values():
             node.render(screen)
