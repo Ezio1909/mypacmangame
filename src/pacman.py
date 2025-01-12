@@ -48,6 +48,8 @@ class Pacman(object):
         if self.overshotTarget():
             self.logger.debug("Overshot target, updating node and target")
             self.node = self.target
+            if self.node.neighbors[PORTAL] is not None:
+                self.node = self.node.neighbors[PORTAL]
             self.target = self.getNewTarget(direction)
             if self.target is not self.node:
                 self.direction = direction

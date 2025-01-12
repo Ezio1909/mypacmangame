@@ -20,12 +20,13 @@ class Node:
             UP: None,
             DOWN: None,
             LEFT: None,
-            RIGHT: None,        
+            RIGHT: None,
+            PORTAL: None, 
         }
 
     def render(self, screen):
         for n in self.neighbors.keys():
-            if self.neighbors[n] is not None:
+            if self.neighbors[n] is not None and n is not PORTAL:
                 line_start = self.position.asTuple()
                 line_end = self.neighbors[n].position.asTuple()
                 pygame.draw.line(screen, WHITE, line_start, line_end, 4)
@@ -92,6 +93,13 @@ class NodeGroup(object):
                         key = otherkey
                 elif dataT[col][row] not in self.pathSymbols:
                     key = None
+
+    def setPortalPair(self, pair1, pair2):
+        key1 = self.constructKey(*pair1)
+        key2 = self.constructKey(*pair2)
+        if key1 in self.nodesLUT.keys() and key2 in self.nodesLUT.keys():
+            self.nodesLUT[key1].neighbors[PORTAL] = self.nodesLUT[key2]
+            self.nodesLUT[key2].neighbors[PORTAL] = self.nodesLUT[key1]
 
     def getNodeFromPixels(self, xpixel, ypixel):
         if (xpixel, ypixel) in self.nodesLUT.keys():
