@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from vector import Vector
 from constants import *
+from entity import Entity
 import logging
 
 logging.basicConfig(
@@ -12,11 +13,12 @@ logging.basicConfig(
     ]
 )
 
-class Pacman(object):
+class Pacman(Entity):
 
     def __init__(self, node):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.debug("Initializing Pacman")
+        Entity.__init__(self, node)
         self.name = PACMAN
         # self.position = Vector(200, 400)
         self.directions = {
