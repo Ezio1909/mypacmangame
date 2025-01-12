@@ -71,7 +71,7 @@ class Entity(object):
     def randomDirection(self, directions):
         return directions[randint(0, len(directions) - 1)]
 
-    def upadte(self, dt):
+    def update(self, dt):
         self.position += self.directions[self.direction]*self.speed*dt
 
         if self.overshotTarget():
