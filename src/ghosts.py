@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 from constants import *
+from vector import Vector
 from entity import Entity
 
 class Ghost(Entity):
@@ -8,3 +9,5 @@ class Ghost(Entity):
         Entity.__init__(self, node)
         self.name = GHOST
         self.points = 200
+        self.goal = Vector()
+        self.directionMethod = self.goalDirection

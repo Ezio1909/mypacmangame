@@ -1,11 +1,21 @@
+import logging
 import pygame
 from pygame.locals import *
 from vector import Vector
 from constants import *
 from random import randint
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()  # Logs to console
+    ]
+)
+
 class Entity(object):
     def __init__(self, node):
+        self.logger = logging.getLogger(self.__class__.__name__)
         self.name = None
         self.directions = {UP:Vector(0, -1),DOWN:Vector(0, 1), 
                           LEFT:Vector(-1, 0), RIGHT:Vector(1, 0), STOP:Vector()}
@@ -19,6 +29,8 @@ class Entity(object):
         self.target = node
         self.visible = True
         self.disablePortal = False
+        self.goal = None
+        self.directionMethod = self.randomDirection
 
     def setPosition(self):
         self.position = self.node.position.copy()
@@ -71,13 +83,21 @@ class Entity(object):
     def randomDirection(self, directions):
         return directions[randint(0, len(directions) - 1)]
 
+    def goalDirection(self, directions):
+        distances = []
+        for direction in directions:
+            vec = self.node.position + self.directions[direction]*TILEWIDTH - self.goal
+            distances.append(vec.magnitudeSquared())
+        index = distances.index(min(distances))
+        return directions[index]
+
     def update(self, dt):
         self.position += self.directions[self.direction]*self.speed*dt
-
+         
         if self.overshotTarget():
             self.node = self.target
             directions = self.validDirections()
-            direction = self.randomDirection(directions)
+            direction = self.directionMethod(directions)   
             if not self.disablePortal:
                 if self.node.neighbors[PORTAL] is not None:
                     self.node = self.node.neighbors[PORTAL]
@@ -85,9 +105,9 @@ class Entity(object):
             if self.target is not self.node:
                 self.direction = direction
             else:
-                self.direction = self.getNewTarget(self.direction)
-        
-        self.setPosition()
+                self.target = self.getNewTarget(self.direction)
+
+            self.setPosition()
 
     def render(self, screen):
         if self.visible:
