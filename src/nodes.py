@@ -39,8 +39,8 @@ class NodeGroup(object):
         self.nodeList = []
         self.level = level
         self.nodesLUT = {}
-        self.nodeSymbols = ['+']
-        self.pathSymbols = ['.']
+        self.nodeSymbols = ['+', 'P', 'n']
+        self.pathSymbols = ['.', '-', '|', 'p']
         data = self.readMazeFile(level)
         self.logger.info(f"dataAfterReadFile: {data}")
         self.createNodeTable(data)
