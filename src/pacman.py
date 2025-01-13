@@ -21,6 +21,7 @@ class Pacman(Entity):
         self.color = YELLOW
         self.direction = LEFT
         self.setBetweenNodes(LEFT)
+        self.alive = True
 
     def getValidKey(self):
         key_pressed = pygame.key.get_pressed()
@@ -66,6 +67,16 @@ class Pacman(Entity):
 
     def collideGhost(self, ghost):
         return self.collideCheck(ghost)
+
+    def reset(self):
+        Entity.reset(self)
+        self.direction = LEFT
+        self.setBetweenNodes(LEFT)
+        self.alive = True
+
+    def die(self):
+        self.alive = False
+        self.direction = STOP
 
     def collideCheck(self, other):
         d = self.position - other.position

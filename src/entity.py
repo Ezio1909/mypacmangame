@@ -100,6 +100,12 @@ class Entity(object):
         index = distances.index(min(distances))
         return directions[index]
 
+    def reset(self):
+        self.setStartNode(self.startNode)
+        self.direction = STOP
+        self.speed = 100
+        self.visible = True
+
     def update(self, dt):
         self.position += self.directions[self.direction]*self.speed*dt
          
