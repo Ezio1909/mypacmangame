@@ -40,6 +40,7 @@ class Pacman(Entity):
 
     def update(self, dt):
         self.logger.debug(f"Updating position with dt={dt}")
+        self.sprites.update(dt)
         self.position += self.directions[self.direction]*self.speed*dt
         direction = self.getValidKey()
         # self.direction = direction
