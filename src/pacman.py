@@ -4,6 +4,7 @@ from vector import Vector
 from constants import *
 from entity import Entity
 import logging
+from sprites import PacmanSprites
 
 logging.basicConfig(
     level=logging.INFO,
@@ -22,6 +23,8 @@ class Pacman(Entity):
         self.direction = LEFT
         self.setBetweenNodes(LEFT)
         self.alive = True
+        self.sprites = PacmanSprites(self)
+
 
     def getValidKey(self):
         key_pressed = pygame.key.get_pressed()
